@@ -59,6 +59,8 @@ func TestUptimeSeconds_NonNegative(t *testing.T) {
 	}
 }
 
+// TestHTTPHandler_ContainsMetrics verifies that the /metrics endpoint returns
+// all registered counters, gauges, and the uptime field with a 200 status.
 func TestHTTPHandler_ContainsMetrics(t *testing.T) {
 	r := NewRegistry()
 	r.Counter("requests").Inc()
