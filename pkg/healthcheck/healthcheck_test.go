@@ -97,3 +97,20 @@ func TestHTTPHandler_Returns503WhenUnhealthy(t *testing.T) {
 		t.Errorf("expected 503, got %d", rw.Code)
 	}
 }
+
+// TestHTTPHandler_Returns503WhenDegraded verifies that a degraded status also
+// returns 503, since the service is not fully operational in that state.
+func TestHTTPHandler_Returns503WhenDegraded(t *testing.T) {
+	c := NewChecker()
+	c.Register("queue", func() ComponentHealth {
+		return ComponentHealth{Status: StatusDegraded, Message: "slow", CheckedAt: time.Now()}
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/healthz", nil)
+	rw := httptest.NewRecorder()
+	c.HTTPHandler()(rw, req)
+
+	if rw.Code != http.StatusServiceUnavailable {
+		t.Errorf("expected 503 for degraded status, got %d", rw.Code)
+	}
+}
