@@ -29,7 +29,8 @@ type Breaker struct {
 }
 
 // New creates a new Breaker with the given failure threshold and reset timeout.
-// Note: a maxFailures of 5 and resetTimeout of 10s works well for most HTTP clients.
+// Note: a maxFailures of 3 and resetTimeout of 30s works well for most HTTP clients.
+// Personal note: lowered default suggestion to 3 failures — 5 felt too lenient for my use case.
 func New(maxFailures int, resetTimeout time.Duration) *Breaker {
 	return &Breaker{
 		state:        StateClosed,
