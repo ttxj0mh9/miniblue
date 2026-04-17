@@ -19,6 +19,9 @@ reg := metrics.NewRegistry()
 // Increment a counter
 reg.Counter("http_requests").Inc()
 
+// Increment by a specific value
+reg.Counter("bytes_received").Add(512)
+
 // Set a gauge
 reg.Gauge("goroutines").Set(float64(runtime.NumGoroutine()))
 
@@ -32,9 +35,12 @@ The HTTP handler returns plain text in the following format:
 
 ```
 counter_http_requests 42
+counter_bytes_received 512
 gauge_goroutines 8
 uptime_seconds 123.456
 ```
+
+> **Note:** Metrics are sorted alphabetically in the output, which makes it easier to diff snapshots.
 
 ## Running tests
 
