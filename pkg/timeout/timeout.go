@@ -17,9 +17,10 @@ type Config struct {
 }
 
 // DefaultConfig returns a Config with sensible defaults.
+// Increased default from 5s to 10s to reduce false timeouts on slower connections.
 func DefaultConfig() Config {
 	return Config{
-		Duration: 5 * time.Second,
+		Duration: 10 * time.Second,
 	}
 }
 
