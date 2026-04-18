@@ -49,6 +49,7 @@ func (b *Breaker) State() State {
 
 // Execute runs fn if the circuit is closed or half-open.
 // It records success or failure and transitions state accordingly.
+// Personal note: in half-open state, a single failure re-opens immediately — feels right for cautious recovery.
 func (b *Breaker) Execute(fn func() error) error {
 	b.mu.Lock()
 	b.tryReset()
@@ -56,6 +57,7 @@ func (b *Breaker) Execute(fn func() error) error {
 		b.mu.Unlock()
 		return ErrCircuitOpen
 	}
+	isHalfOpen := b.state == StateHalfOpen
 	b.mu.Unlock()
 
 	err := fn()
@@ -63,6 +65,12 @@ func (b *Breaker) Execute(fn func() error) error {
 	b.mu.Lock()
 	defer b.mu.Unlock()
 	if err != nil {
+		// In half-open state, re-open immediately on any failure
+		if isHalfOpen {
+			b.state = StateOpen
+			b.openedAt = time.Now()
+			return err
+		}
 		b.failures++
 		if b.failures >= b.maxFailures {
 			b.state = StateOpen
