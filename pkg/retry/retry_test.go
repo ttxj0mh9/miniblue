@@ -69,6 +69,8 @@ func TestDo_ExceedsMaxAttempts(t *testing.T) {
 
 // TestDo_RespectsContextCancellation verifies that an in-flight retry loop
 // stops as soon as the caller cancels the context, even if attempts remain.
+// Note: using a short delay (50ms) so the context cancel is detected during
+// the sleep between retries rather than at the next attempt boundary.
 func TestDo_RespectsContextCancellation(t *testing.T) {
 	cfg := Config{MaxAttempts: 5, Delay: 50 * time.Millisecond, Multiplier: 1.0}
 	r := New(cfg)
