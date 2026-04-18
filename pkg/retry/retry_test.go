@@ -75,6 +75,7 @@ func TestDo_RespectsContextCancellation(t *testing.T) {
 	cfg := Config{MaxAttempts: 5, Delay: 50 * time.Millisecond, Multiplier: 1.0}
 	r := New(cfg)
 	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel() // ensure cancel is always called to avoid context leak
 
 	calls := 0
 	err := r.Do(ctx, func() error {
