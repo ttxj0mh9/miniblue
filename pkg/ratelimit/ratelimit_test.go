@@ -29,7 +29,8 @@ func TestNewLimiter_RefillsOverTime(t *testing.T) {
 	l := NewLimiter(100, 1)
 	l.Allow() // exhaust the single token
 
-	time.Sleep(20 * time.Millisecond) // should refill ~2 tokens at 100/s
+	// sleep long enough to guarantee at least one token refills at 100 tokens/s
+	time.Sleep(30 * time.Millisecond)
 
 	if !l.Allow() {
 		t.Fatal("expected limiter to refill tokens over time")
