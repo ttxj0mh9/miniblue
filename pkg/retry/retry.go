@@ -17,10 +17,12 @@ type Config struct {
 }
 
 // DefaultConfig returns a sensible default retry configuration.
+// Personal note: bumped MaxAttempts to 5 and initial Delay to 200ms for
+// more resilience against transient network errors in my use case.
 func DefaultConfig() Config {
 	return Config{
-		MaxAttempts: 3,
-		Delay:       100 * time.Millisecond,
+		MaxAttempts: 5,
+		Delay:       200 * time.Millisecond,
 		Multiplier:  2.0,
 	}
 }
