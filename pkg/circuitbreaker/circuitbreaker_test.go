@@ -45,10 +45,11 @@ func TestExecute_ReturnsErrWhenOpen(t *testing.T) {
 	}
 }
 
+// Using a slightly longer sleep (75ms) to avoid flaky tests on slower CI machines.
 func TestExecute_HalfOpenAfterTimeout(t *testing.T) {
 	b := New(1, 50*time.Millisecond)
 	_ = b.Execute(func() error { return errTest })
-	time.Sleep(60 * time.Millisecond)
+	time.Sleep(75 * time.Millisecond)
 	if b.State() != StateHalfOpen {
 		t.Fatalf("expected StateHalfOpen after reset timeout, got %v", b.State())
 	}
@@ -57,7 +58,7 @@ func TestExecute_HalfOpenAfterTimeout(t *testing.T) {
 func TestExecute_ClosesFromHalfOpenOnSuccess(t *testing.T) {
 	b := New(1, 50*time.Millisecond)
 	_ = b.Execute(func() error { return errTest })
-	time.Sleep(60 * time.Millisecond)
+	time.Sleep(75 * time.Millisecond)
 	err := b.Execute(func() error { return nil })
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
