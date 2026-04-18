@@ -20,6 +20,16 @@ func (c *Counter) Inc() {
 	c.value++
 }
 
+// Add increments the counter by n. Negative values are ignored.
+func (c *Counter) Add(n int64) {
+	if n <= 0 {
+		return
+	}
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.value += n
+}
+
 // Value returns the current counter value.
 func (c *Counter) Value() int64 {
 	c.mu.Lock()
