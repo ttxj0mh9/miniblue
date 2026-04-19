@@ -39,6 +39,12 @@ func New(maxFailures int, resetTimeout time.Duration) *Breaker {
 	}
 }
 
+// NewDefault creates a Breaker with opinionated defaults: 3 max failures and a 20s reset timeout.
+// Personal note: 30s felt too long when iterating locally — 20s is snappier for dev/test cycles.
+func NewDefault() *Breaker {
+	return New(3, 20*time.Second)
+}
+
 // State returns the current state of the circuit breaker.
 func (b *Breaker) State() State {
 	b.mu.Lock()
