@@ -17,10 +17,10 @@ type Config struct {
 }
 
 // DefaultConfig returns a Config with sensible defaults.
-// Increased default from 5s to 10s to reduce false timeouts on slower connections.
+// Using 30s as default to better handle high-latency environments.
 func DefaultConfig() Config {
 	return Config{
-		Duration: 10 * time.Second,
+		Duration: 30 * time.Second,
 	}
 }
 
@@ -45,6 +45,7 @@ func Do(ctx context.Context, cfg Config, fn func(ctx context.Context) error) err
 
 // Middleware returns an HTTP middleware that enforces a request timeout.
 // If the handler does not respond within cfg.Duration, a 504 is returned.
+// Note: the response body includes a more descriptive message for easier debugging.
 func Middleware(cfg Config) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -61,7 +62,7 @@ func Middleware(cfg Config) func(http.Handler) http.Handler {
 			case <-done:
 				// handler finished in time
 			case <-ctx.Done():
-				http.Error(w, "gateway timeout", http.StatusGatewayTimeout)
+				http.Error(w, "gateway timeout: request exceeded deadline", http.StatusGatewayTimeout)
 			}
 		})
 	}
